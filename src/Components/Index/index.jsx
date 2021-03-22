@@ -83,8 +83,8 @@ function Index() {
     const headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
     const urlencoded = new URLSearchParams();
-    urlencoded.append('email', 'test@mail.ru');
-    urlencoded.append('password', '123456');
+    urlencoded.append('email', login);
+    urlencoded.append('password', password);
     const requestOptions = {
       method: 'POST',
       headers: headers,
