@@ -291,7 +291,6 @@ function Panel() {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState('');
   const [newMessages, setNewMessages] = useState(false);
-  const [openedChat, setOpenedChat] = useState(null);
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('data'));
@@ -317,23 +316,19 @@ function Panel() {
               ...chat
             };
           });
-          Promise.all(clients).then(arr => { setClients(arr); setLoading(false); });
+          Promise.all(clients).then(arr => { 
+            setClients(arr);
+            if(chatID) setMessages(arr.filter(client => client.ID === id)[0].messages);
+            setLoading(false);
+          });
         });
     }, 5000);
   }, [id]);
 
   const openChat = (id) => {
-    if(openedChat) {
-      openedChat.stop();
-      setOpenedChat(null);
-    }
     setContent('');
     setChatID(id);
     setMessages(clients.filter(client => client.ID === id)[0].messages);
-    const intrvl = setInterval(() => {
-      openChat(id);
-    }, 5000);
-    setOpenedChat(intrvl);
   };
 
   const sendMessage = () => {
@@ -421,7 +416,7 @@ function Panel() {
           </Contacts>
           <ChatWindow>
             <Messages>
-              { !newMessages && messages[0] && messages.map(message => {
+              { messages[0] && messages.map(message => {
                 if(message.authorId == id) return(
                   <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p> }</MessageBlockAuthor></MessageBlock><br/></>
                 )
