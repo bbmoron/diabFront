@@ -329,7 +329,7 @@ function Panel() {
   useEffect(() => {
     if (!update) return;
     const formatted = messages.map(message => {
-      if (message.authorId == chatID) return (
+      if (message.authorId != chatID) return (
         <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p>}</MessageBlockAuthor></MessageBlock><br /></>
       )
       return (
@@ -344,6 +344,7 @@ function Panel() {
     setContent('');
     setChatID(id);
     setMessages(clients.filter(client => client.ID === id)[0].messages);
+    setUpdate(true);
   };
 
   const sendMessage = () => {
