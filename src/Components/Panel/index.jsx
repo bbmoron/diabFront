@@ -290,7 +290,7 @@ function Panel() {
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState('');
-  const [newMessages, setNewMessages] = useState(false);
+  const [newMessages, setNewMessages] = useState([]);
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('data'));
@@ -324,6 +324,19 @@ function Panel() {
         });
     }, 5000);
   }, [id]);
+
+  useEffect(() => {
+    if(!messages[0]) return;
+    const formatted = messages.map(message => {
+      if (message.authorId == id) return (
+        <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p>}</MessageBlockAuthor></MessageBlock><br /></>
+      )
+      return (
+        <><MessageBlock style={{ alignItems: 'flex-start' }}><MessageBlockRecepient>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p>}</MessageBlockRecepient></MessageBlock><br /></>
+      )
+    });
+    setNewMessages(formatted);
+  }, [messages]);
 
   const openChat = (id) => {
     setContent('');
@@ -416,14 +429,7 @@ function Panel() {
           </Contacts>
           <ChatWindow>
             <Messages>
-              { messages[0] && messages.map(message => {
-                if(message.authorId == id) return(
-                  <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p> }</MessageBlockAuthor></MessageBlock><br/></>
-                )
-                return(
-                  <><MessageBlock  style={{ alignItems: 'flex-start' }}><MessageBlockRecepient>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p> }</MessageBlockRecepient></MessageBlock><br/></>
-                )
-              }) }
+              { newMessages }
             </Messages>
             <InputArea>
               <Input onChange={ e => setContent(e.target.value) } value={content}></Input>
