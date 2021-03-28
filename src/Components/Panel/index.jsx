@@ -338,7 +338,7 @@ function Panel() {
     });
     setNewMessages(formatted);
     setUpdate(false);
-  }, [update]);
+  }, [update, chatID]);
 
   const openChat = (id) => {
     setContent('');
