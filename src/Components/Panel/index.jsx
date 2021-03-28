@@ -291,6 +291,7 @@ function Panel() {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState('');
   const [newMessages, setNewMessages] = useState(false);
+  const [openedChat, setOpenedChat] = useState(null);
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('data'));
@@ -322,13 +323,17 @@ function Panel() {
   }, [id]);
 
   const openChat = (id) => {
+    if(openedChat) {
+      openedChat.stop();
+      setOpenedChat(null);
+    }
     setContent('');
     setChatID(id);
     setMessages(clients.filter(client => client.ID === id)[0].messages);
-    setInterval(() => {
-      setChatID(id);
-      setMessages(clients.filter(client => client.ID === id)[0].messages);
+    const intrvl = setInterval(() => {
+      openChat(id);
     }, 5000);
+    setOpenedChat(intrvl);
   };
 
   const sendMessage = () => {
