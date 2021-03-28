@@ -325,8 +325,6 @@ function Panel() {
   }, [id]);
 
   useEffect(() => {
-    console.log(update);
-    console.log(chatID);
     if (!update || !chatID) return;
     const formatted = clients.filter(client => client.ID === chatID)[0].messages.map(message => {
       if (message.authorId == id) return (
@@ -371,9 +369,41 @@ function Panel() {
       .catch(error => console.error(error));
   };
 
-  const sendImage = () => {
-    // TODO:
+  const prepareImage = () => {
+    if(!chatID) return;
+    document.getElementById('upload').click();
   };
+
+  const sendImage = () => {
+    const file = document.getElementById('upload');
+    let reader = new FileReader();
+    if (file.files[0]) {
+      reader.onloadend = (upload) => {
+        const imgBase64 = upload.target.result;
+        console.log(imgBase64);
+        var headers = new Headers();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+        var urlencoded = new URLSearchParams();
+        urlencoded.append('chatId', chatID);
+        urlencoded.append('authorId', id);
+        urlencoded.append('content', imgBase64);
+
+        var requestOptions = {
+          method: 'POST',
+          headers: headers,
+          body: urlencoded,
+          redirect: 'follow'
+        };
+
+        fetch('http://194.87.248.56:8080/message', requestOptions)
+          .then(response => response.json())
+          .then(() => console.log('image sent'))
+          .catch(error => console.error(error));
+      };
+      reader.readAsDataURL(file.files[0]);
+    }
+  }
 
   const switchStatus = (e) => {
     const checked = e.target.checked;
@@ -437,8 +467,9 @@ function Panel() {
             </Messages>
             <InputArea>
               <Input onChange={ e => setContent(e.target.value) } value={content}></Input>
+              <input type="file" id="upload" style={{ "display": "none" }} onChange={sendImage}></input>
               <SendButton>
-                <img onClick={ sendImage } alt="attach file" src={clip} style={{ width: '40%' }} />
+                <img onClick={ prepareImage } alt="attach file" src={clip} style={{ width: '40%' }} />
                 <img onClick={ sendMessage } alt="send message text" src={send} style={{ width: '40%' }} />
               </SendButton>
             </InputArea>
