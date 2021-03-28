@@ -325,6 +325,10 @@ function Panel() {
     setContent('');
     setChatID(id);
     setMessages(clients.filter(client => client.ID === id)[0].messages);
+    setInterval(() => {
+      setChatID(id);
+      setMessages(clients.filter(client => client.ID === id)[0].messages);
+    }, 5000);
   };
 
   const sendMessage = () => {
