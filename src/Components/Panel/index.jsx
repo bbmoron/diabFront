@@ -328,7 +328,7 @@ function Panel() {
 
   useEffect(() => {
     if (!update) return;
-    const formatted = messages.map(message => {
+    const formatted = clients.filter(client => client.ID === chatID)[0].messages.map(message => {
       if (message.authorId != chatID) return (
         <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p>}</MessageBlockAuthor></MessageBlock><br /></>
       )
