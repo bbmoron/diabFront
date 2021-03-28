@@ -282,7 +282,6 @@ const MessageBlockAuthor = styled.div`
 
 function Panel() {
   const [clients, setClients] = useState([]);
-  const [messages, setMessages] = useState([]);
   const [chatID, setChatID] = useState(0);
   const [id, setId] = useState(0);
   const [username, setUsername] = useState('');
@@ -308,7 +307,6 @@ function Panel() {
       fetch(`http://194.87.248.56:8080/chats?id=${id}`)
         .then(response => response.json())
         .then(async data => {
-          // setClients(data);
           const clients = data.map(async chat => {
             const resp = await fetch(`http://194.87.248.56:8080/history?chatId=${chat.ID}`);
             const body = await resp.json();
@@ -327,9 +325,11 @@ function Panel() {
   }, [id]);
 
   useEffect(() => {
+    console.log(update);
+    console.log(chatID);
     if (!update || !chatID) return;
     const formatted = clients.filter(client => client.ID === chatID)[0].messages.map(message => {
-      if (message.authorId != chatID) return (
+      if (message.authorId == id) return (
         <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p>}</MessageBlockAuthor></MessageBlock><br /></>
       )
       return (
@@ -343,8 +343,9 @@ function Panel() {
   const openChat = (id) => {
     setContent('');
     setChatID(id);
-    setMessages(clients.filter(client => client.ID === id)[0].messages);
-    setUpdate(true);
+    setTimeout(() => {
+      setUpdate(true);
+    }, 1000);
   };
 
   const sendMessage = () => {
@@ -366,7 +367,7 @@ function Panel() {
 
     fetch('http://194.87.248.56:8080/message', requestOptions)
       .then(response => response.json())
-      .then(result => setContent(''))
+      .then(() => setContent(''))
       .catch(error => console.error(error));
   };
 
@@ -392,8 +393,8 @@ function Panel() {
 
     fetch('194.87.248.56:8080/doctors', requestOptions)
       .then(response => response.text())
-      .then(result => setActive(checked))
-      .catch(error => setActive(!checked));
+      .then(() => setActive(checked))
+      .catch(() => setActive(!checked));
   }
 
   return(
