@@ -291,6 +291,7 @@ function Panel() {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState('');
   const [newMessages, setNewMessages] = useState([]);
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('data'));
@@ -318,7 +319,7 @@ function Panel() {
           });
           Promise.all(clients).then(arr => { 
             setClients(arr);
-            if(chatID) setMessages(arr.filter(client => client.ID === id)[0].messages);
+            setUpdate(true);
             setLoading(false);
           });
         });
@@ -326,9 +327,9 @@ function Panel() {
   }, [id]);
 
   useEffect(() => {
-    if(!messages[0]) return;
+    if (!update) return;
     const formatted = messages.map(message => {
-      if (message.authorId == id) return (
+      if (message.authorId == chatID) return (
         <><MessageBlock style={{ alignItems: 'flex-end' }}><MessageBlockAuthor>{message.content.indexOf('data:image/') !== -1 ? <a href={message.content} target="_blank"><img src={message.content} style={{ height: '200px' }} /></a> : <p>{message.content}</p>}</MessageBlockAuthor></MessageBlock><br /></>
       )
       return (
@@ -336,7 +337,8 @@ function Panel() {
       )
     });
     setNewMessages(formatted);
-  }, [messages]);
+    setUpdate(false);
+  }, [update]);
 
   const openChat = (id) => {
     setContent('');
